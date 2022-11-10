@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PluggyClient } from 'pluggy-sdk';
-import { createClient } from '@supabase/supabase-js'
-
+import { createClient } from '@supabase/supabase-js';
 
 const PLUGGY_CLIENT_ID = process.env.PLUGGY_CLIENT_ID || '';
 const PLUGGY_CLIENT_SECRET = process.env.PLUGGY_CLIENT_SECRET || '';
@@ -16,23 +15,29 @@ export default async function handler(
     clientId: PLUGGY_CLIENT_ID,
     clientSecret: PLUGGY_CLIENT_SECRET,
   });
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const accounts = await client.fetchAccounts(req.query.itemId as string);
+  const { itemId } = req.body;
+
+  const accounts = await client.fetchAccounts(itemId);
   const transactions = [];
   for (const account of accounts.results) {
     const accountTransactions = await client.fetchAllTransactions(account.id);
     transactions.push(...accountTransactions);
-    
+
     await supabase
       .from('accounts')
-      .upsert({id: account.id, itemId: account.itemId})
-    
-    await supabase
-      .from('transactions')
-      .upsert(accountTransactions.map(tx => ({id: tx.id, accountId: tx.accountId, amount: tx.amount,  category: tx.category})))
-  
+      .upsert({ id: account.id, itemId: account.itemId });
+
+    await supabase.from('transactions').upsert(
+      accountTransactions.map((tx) => ({
+        id: tx.id,
+        accountId: tx.accountId,
+        amount: tx.amount,
+        category: tx.category,
+      }))
+    );
   }
 
-  res.status(201).json({ itemId: req.query.itemId });
+  res.status(204).end();
 }
