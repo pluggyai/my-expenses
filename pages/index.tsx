@@ -11,7 +11,9 @@ const PluggyConnect = dynamic(
 
 export default function Home() {
 
-  const [connectToken, setConnectToken] = useState<string>()
+  const [connectToken, setConnectToken] = useState<string>('')
+  const [isWidgetOpen, setIsWidgetOpen] = useState<boolean>(false)
+  const [categoryBalances, setCategoryBalances] = useState<{category: string, balance: number}[] | null>(null)
 
   useEffect(() => {
     if (!connectToken) {
@@ -25,8 +27,11 @@ export default function Home() {
     }
   })
 
-  const onSuccess = (itemData: { item: any; }) => {
-    console.log(itemData.item)
+  const onSuccess = async (itemData: { item: any; }) => {
+    const response = await fetch('/api/transactions?itemId=' + itemData.item.id)
+    const categoryBalances = await response.json()
+    setIsWidgetOpen(false)
+    setCategoryBalances(categoryBalances)
   }
 
   const onError = (error: any) => {
@@ -42,20 +47,50 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to Pluggy My Expenses!
-        </h1>
-
         {
-          connectToken ? 
-            <PluggyConnect
-              connectToken={connectToken}
-              onSuccess={onSuccess}
-              onError={onError}
-              includeSandbox
-            /> : 'Loading...'
+          !categoryBalances ? 
+          (
+            <div className={styles.grid}>
+              <h1 className={styles.title}>
+                Welcome to Pluggy My Expenses!
+              </h1>
+              {isWidgetOpen ? (
+                <PluggyConnect
+                  connectToken={connectToken}
+                  includeSandbox={true}
+                  onSuccess={onSuccess}
+                  onError={onError}
+                />
+              ) : (
+                <button
+                  className={styles.card}
+                  disabled={!connectToken}
+                  onClick={() => setIsWidgetOpen(true)}
+                >
+                  <h3>Connect your account</h3>
+                </button>
+              )}
+            </div>
+          ) : 
+          (
+            <div>
+              <table>
+                <thead><th>Category</th><th>Spent</th></thead>
+                <tbody>
+                  {
+                    categoryBalances.map(categoryBalance => (
+                      <tr key={categoryBalance.category}>
+                        <td>{categoryBalance.category}</td>
+                        <td>$ {categoryBalance.balance}</td>
+                      </tr>
+                    ))
+                  }
+                 
+                </tbody>
+              </table>
+            </div>
+            )        
         }
-        
       </main>
 
       
