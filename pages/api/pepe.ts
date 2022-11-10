@@ -5,5 +5,5 @@ export default async function handler(
   res: NextApiResponse<{ accessToken: string }>
 ) {
   res.status(200).end();
-  setTimeout(() => console.log('Hola'), 2000);
+  setTimeout(() => fetch('https://pruebaaaaaaaa.requestcatcher.com'), 5000);
 }
