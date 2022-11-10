@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.0.6",
     "@types/lodash": "^4.14.188",
     "@types/node": "18.11.9",
     "@types/react": "18.0.25",

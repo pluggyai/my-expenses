@@ -29,8 +29,9 @@ export default function Home() {
   })
 
   const onSuccess = async (itemData: { item: any; }) => {
-    const response = await fetch('/api/transactions?itemId=' + itemData.item.id)
-    const categoryBalances = await response.json()
+    await fetch('/api/items?itemId=' + itemData.item.id, { method: 'POST' })
+    const transactionsResponse = await fetch('/api/transactions?itemId=' + itemData.item.id)
+    const categoryBalances = await transactionsResponse.json()
     setIsWidgetOpen(false)
     setCategoryBalances(categoryBalances)
     setItemIdToUpdate(itemData.item.id)
