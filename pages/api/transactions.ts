@@ -1,25 +1,20 @@
 import { groupBy, sumBy, sortBy } from 'lodash';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PluggyClient } from 'pluggy-sdk';
+import { createClient } from '@supabase/supabase-js';
+import { Transaction } from 'pluggy-sdk';
 
-const PLUGGY_CLIENT_ID = process.env.PLUGGY_CLIENT_ID || '';
-const PLUGGY_CLIENT_SECRET = process.env.PLUGGY_CLIENT_SECRET || '';
+const SUPABASE_URL = process.env.SUPABASE_URL || '';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || '';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
 ) {
-  const client = new PluggyClient({
-    clientId: PLUGGY_CLIENT_ID,
-    clientSecret: PLUGGY_CLIENT_SECRET,
-  });
-
-  const accounts = await client.fetchAccounts(req.query.itemId as string);
-  const transactions = [];
-  for (const account of accounts.results) {
-    const accountTransactions = await client.fetchAllTransactions(account.id);
-    transactions.push(...accountTransactions);
-  }
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  const { data: transactions } = await supabase
+    .from('transactions')
+    .select('*, accounts(*)')
+    .eq('accounts.itemId', req.query.itemId);
 
   const transactionsPerCategory = groupBy(
     transactions,
