@@ -24,17 +24,18 @@ export default function Home() {
         setConnectToken(accessToken)
       }
 
-      fetchToken()
+      fetchToken()  
     }
   })
 
   const onSuccess = async (itemData: { item: any; }) => {
-    await fetch('/api/items?itemId=' + itemData.item.id, { method: 'POST' })
-    const transactionsResponse = await fetch('/api/transactions?itemId=' + itemData.item.id)
-    const categoryBalances = await transactionsResponse.json()
-    setIsWidgetOpen(false)
-    setCategoryBalances(categoryBalances)
-    setItemIdToUpdate(itemData.item.id)
+    setTimeout(async () => { // Wait for webhook to be sent from pluggy-api to our backend
+      const transactionsResponse = await fetch('/api/transactions?itemId=' + itemData.item.id)
+      const categoryBalances = await transactionsResponse.json()
+      setIsWidgetOpen(false)
+      setCategoryBalances(categoryBalances)
+      setItemIdToUpdate(itemData.item.id)
+    }, 5000)
   }
 
   const onError = (error: any) => {
