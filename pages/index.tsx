@@ -12,6 +12,7 @@ const PluggyConnect = dynamic(
 export default function Home() {
 
   const [connectToken, setConnectToken] = useState<string>('')
+  const [itemIdToUpdate, setItemIdToUpdate] = useState<string>()
   const [isWidgetOpen, setIsWidgetOpen] = useState<boolean>(false)
   const [categoryBalances, setCategoryBalances] = useState<{category: string, balance: number}[] | null>(null)
 
@@ -32,6 +33,7 @@ export default function Home() {
     const categoryBalances = await response.json()
     setIsWidgetOpen(false)
     setCategoryBalances(categoryBalances)
+    setItemIdToUpdate(itemData.item.id)
   }
 
   const onError = (error: any) => {
@@ -47,33 +49,10 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        {
-          !categoryBalances ? 
-          (
-            <div className={styles.grid}>
-              <h1 className={styles.title}>
-                Welcome to Pluggy My Expenses!
-              </h1>
-              {isWidgetOpen ? (
-                <PluggyConnect
-                  connectToken={connectToken}
-                  includeSandbox={true}
-                  onSuccess={onSuccess}
-                  onError={onError}
-                />
-              ) : (
-                <button
-                  className={styles.card}
-                  disabled={!connectToken}
-                  onClick={() => setIsWidgetOpen(true)}
-                >
-                  <h3>Connect your account</h3>
-                </button>
-              )}
-            </div>
-          ) : 
-          (
-            <div>
+        <div className={styles.grid}>
+          {
+            categoryBalances ? (
+              <div>
               <table>
                 <thead><th>Category</th><th>Spent</th></thead>
                 <tbody>
@@ -85,12 +64,32 @@ export default function Home() {
                       </tr>
                     ))
                   }
-                 
                 </tbody>
               </table>
             </div>
-            )        
-        }
+            ) : 
+            <h1 className={styles.title}>
+              Welcome to Pluggy My Expenses!
+            </h1>
+          }  
+          {isWidgetOpen ? (
+            <PluggyConnect
+              updateItem={itemIdToUpdate}
+              connectToken={connectToken}
+              includeSandbox={true}
+              onSuccess={onSuccess}
+              onError={onError}
+            />
+          ) : (
+            <button
+              className={styles.card}
+              disabled={!connectToken}
+              onClick={() => setIsWidgetOpen(true)}
+            >
+              <h3>{ itemIdToUpdate ? 'Refresh my data' : 'Connect your account' }</h3>
+            </button>
+          )}
+        </div>
       </main>
 
       
