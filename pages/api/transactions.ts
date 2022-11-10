@@ -1,4 +1,4 @@
-import { groupBy, sumBy } from 'lodash';
+import { groupBy, sumBy, sortBy } from 'lodash';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { PluggyClient } from 'pluggy-sdk';
 
@@ -23,16 +23,19 @@ export default async function handler(
 
   const transactionsPerCategory = groupBy(
     transactions,
-    (transaction) => transaction.category
+    (transaction) => transaction.category ?? 'Other'
   );
 
   const categoryBalances: { category: string; balance: number }[] = [];
 
   for (const category in transactionsPerCategory) {
     const transactions = transactionsPerCategory[category];
-    const balance = sumBy(transactions, (transaction) => transaction.amount);
+    const balance = +sumBy(
+      transactions,
+      (transaction) => transaction.amount
+    ).toFixed(2);
     categoryBalances.push({ category, balance });
   }
 
-  res.status(200).json(categoryBalances);
+  res.status(200).json(sortBy(categoryBalances, ['balance']).reverse());
 }
