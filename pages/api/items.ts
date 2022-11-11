@@ -35,6 +35,7 @@ export default async function handler(
         accountId: tx.accountId,
         amount: tx.amount,
         category: tx.category,
+        date: tx.date,
       }))
     );
   }

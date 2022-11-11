@@ -13,7 +13,7 @@ export default async function handler(
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
   const { data: transactions } = await supabase
     .from('transactions')
-    .select('*, accounts(*)')
+    .select('*, accounts!inner(*)')
     .eq('accounts.itemId', req.query.itemId);
 
   const transactionsPerCategory = groupBy(
@@ -32,5 +32,10 @@ export default async function handler(
     categoryBalances.push({ category, balance });
   }
 
-  res.status(200).json(sortBy(categoryBalances, ['balance']).reverse());
+  const startDate = sortBy(transactions, ['date'])[0].date;
+
+  res.status(200).json({
+    categoryBalances: sortBy(categoryBalances, ['balance']),
+    startDate,
+  });
 }
