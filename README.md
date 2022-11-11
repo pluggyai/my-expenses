@@ -1,4 +1,5 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Pluggy My Expenses
+This project is an example PFM (Personal Finance Management) application that integrates with Pluggy. It was created for [this tutorial](https://docs.pluggy.ai/docs/creating-an-use-case-from-scratch)
 
 ## Getting Started
 
