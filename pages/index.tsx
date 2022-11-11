@@ -12,6 +12,7 @@ export default function Home() {
 
   const [connectToken, setConnectToken] = useState<string>('')
   const [itemIdToUpdate, setItemIdToUpdate] = useState<string>()
+  const [startDate, setStartDate] = useState<string>()
   const [isWidgetOpen, setIsWidgetOpen] = useState<boolean>(false)
   const [categoryBalances, setCategoryBalances] = useState<{category: string, balance: number}[] | null>(null)
 
@@ -32,6 +33,7 @@ export default function Home() {
       const transactionsResponse = await fetch('/api/transactions?itemId=' + itemData.item.id)
       const {categoryBalances, startDate} = await transactionsResponse.json()
       setIsWidgetOpen(false)
+      setStartDate(startDate)
       setCategoryBalances(categoryBalances)
       setItemIdToUpdate(itemData.item.id)
     }, 5000)
@@ -48,9 +50,9 @@ export default function Home() {
       <main className="text-center p-5 col-6 offset-3">
         <div>
           {
-            categoryBalances ? (
+            categoryBalances && startDate ? (
             <div className="pb-4">
-              <h3 className="pb-5">Your movements last 12 months per category</h3>
+              <h3 className="pb-5">Your movements since {new Date(startDate).toLocaleDateString()} per category</h3>
               <table className="table">
                 <thead><th>Category</th><th>Amount</th></thead>
                 <tbody>
