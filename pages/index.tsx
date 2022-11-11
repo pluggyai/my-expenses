@@ -30,8 +30,8 @@ export default function Home() {
 
   const onSuccess = async (itemData: { item: any; }) => {
     setTimeout(async () => { // Wait for webhook to be sent from pluggy-api to our backend
-      const transactionsResponse = await fetch('/api/transactions?itemId=' + itemData.item.id)
-      const {categoryBalances, startDate} = await transactionsResponse.json()
+      const reportResponse = await fetch('/api/report?itemId=' + itemData.item.id)
+      const {categoryBalances, startDate} = await reportResponse.json()
       setIsWidgetOpen(false)
       setStartDate(startDate)
       setCategoryBalances(categoryBalances)
