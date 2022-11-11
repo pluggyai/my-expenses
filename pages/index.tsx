@@ -70,7 +70,7 @@ export default function Home() {
               </table>
             </div>
             ) : 
-            <h1 className="display-3 pb-4">
+            <h1 className=" pb-4">
               <i className="las la-wallet"></i> Pluggy My Expenses
             </h1>
           }  
@@ -84,7 +84,11 @@ export default function Home() {
             />
           ) : (
             <button
-            className="btn btn-primary btn-lg"
+            className="btn btn-primary"
+            style={{
+              backgroundColor: '#ef294b',
+              borderColor: '#ef294b'
+            }}
               onClick={() => setIsWidgetOpen(true)}
             >
               { itemIdToUpdate ? 'Refresh my data' : 'Connect your account' }
